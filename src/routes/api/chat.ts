@@ -72,10 +72,15 @@ export const Route = createFileRoute("/api/chat")({
                 .ilike("tracking_code", code)
                 .maybeSingle();
               if (!parcel) return { found: false, trackingCode: code };
+              const { data: parcelRow } = await supabaseAdmin
+                .from("parcels")
+                .select("id")
+                .ilike("tracking_code", code)
+                .maybeSingle();
               const { data: events } = await supabaseAdmin
                 .from("parcel_events")
                 .select("status, location, note, occurred_at")
-                .eq("tracking_code" in parcel ? "parcel_id" : "parcel_id", "")
+                .eq("parcel_id", parcelRow?.id ?? "")
                 .order("occurred_at", { ascending: true });
               return { found: true, parcel, events: events ?? [] };
             },
@@ -87,7 +92,7 @@ export const Route = createFileRoute("/api/chat")({
         const result = streamText({
           model,
           system: SYSTEM_PROMPT,
-          messages: convertToModelMessages(uiMessages),
+          messages: await convertToModelMessages(uiMessages),
           tools,
           stopWhen: stepCountIs(50),
         });
@@ -109,7 +114,7 @@ export const Route = createFileRoute("/api/chat")({
             const rows = finalMessages.map((m) => ({
               thread_id: threadId,
               role: m.role,
-              parts: m.parts as unknown as object,
+              parts: m.parts as unknown as never,
             }));
             if (rows.length) await supabaseAdmin.from("chat_messages").insert(rows);
 
