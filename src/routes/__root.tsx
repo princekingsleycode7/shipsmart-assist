@@ -6,8 +6,8 @@ import {
   useRouter,
   HeadContent,
   Scripts,
-  useServerFn,
 } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { BottomNav, TopNav } from "@/components/nav";
