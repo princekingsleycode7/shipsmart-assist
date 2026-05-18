@@ -1,4 +1,4 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Outlet,
   Link,
@@ -7,26 +7,25 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { useEffect } from "react";
+import { Toaster } from "@/components/ui/sonner";
+import { BottomNav, TopNav } from "@/components/nav";
+import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
+import { checkIsAdmin } from "@/lib/admin.functions";
 
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen items-center justify-center px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
-        </p>
-        <div className="mt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Go home
-          </Link>
-        </div>
+        <h1 className="font-display text-7xl">404</h1>
+        <p className="mt-2 text-muted-foreground">This page wandered off the delivery route.</p>
+        <Link to="/" className="mt-6 inline-block pill bg-primary text-primary-foreground">
+          Go home
+        </Link>
       </div>
     </div>
   );
@@ -35,32 +34,19 @@ function NotFoundComponent() {
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
-
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
-        </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
+    <div className="flex min-h-screen items-center justify-center px-4">
+      <div className="card-soft max-w-md p-8 text-center">
+        <h1 className="font-display text-2xl">Something went wrong</h1>
+        <p className="mt-2 text-sm text-muted-foreground">{error.message}</p>
+        <div className="mt-6 flex justify-center gap-2">
           <button
-            onClick={() => {
-              router.invalidate();
-              reset();
-            }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            onClick={() => { router.invalidate(); reset(); }}
+            className="pill bg-primary text-primary-foreground"
           >
             Try again
           </button>
-          <a
-            href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-          >
-            Go home
-          </a>
+          <Link to="/" className="pill bg-secondary">Home</Link>
         </div>
       </div>
     </div>
@@ -72,21 +58,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Delvora — Quick, safe, reliable delivery" },
+      { name: "description", content: "Track parcels in real time, chat with our AI support assistant, or talk to a real agent on WhatsApp." },
+      { property: "og:title", content: "Delvora — Quick, safe, reliable delivery" },
+      { property: "og:description", content: "Track parcels and get help, anytime." },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
-    links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
-    ],
+    links: [{ rel: "stylesheet", href: appCss }, { rel: "preconnect", href: "https://fonts.googleapis.com" }, { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" }],
   }),
   shellComponent: RootShell,
   component: RootComponent,
@@ -97,23 +75,55 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        {children}
-        <Scripts />
-      </body>
+      <head><HeadContent /></head>
+      <body>{children}<Scripts /></body>
     </html>
   );
 }
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <Shell />
+      <Toaster richColors position="top-center" />
     </QueryClientProvider>
+  );
+}
+
+function Shell() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+  const qc = useQueryClient();
+  const adminFn = useServerFn(checkIsAdmin);
+
+  useEffect(() => {
+    const { data } = supabase.auth.onAuthStateChange(() => {
+      router.invalidate();
+      qc.invalidateQueries();
+    });
+    return () => data.subscription.unsubscribe();
+  }, [router, qc]);
+
+  const { data: adminData } = useQuery({
+    queryKey: ["isAdmin", user?.id],
+    queryFn: () => adminFn(),
+    enabled: !!user,
+  });
+  const isAdmin = Boolean(adminData?.isAdmin);
+
+  const onLogout = async () => {
+    await supabase.auth.signOut();
+    router.navigate({ to: "/" });
+  };
+
+  return (
+    <div className="min-h-screen pb-24 md:pb-0">
+      <TopNav isAdmin={isAdmin} isAuthed={!!user && !loading} onLogout={onLogout} />
+      <main className="mx-auto w-full max-w-5xl px-4 md:px-6">
+        <Outlet />
+      </main>
+      <BottomNav isAdmin={isAdmin} />
+    </div>
   );
 }
