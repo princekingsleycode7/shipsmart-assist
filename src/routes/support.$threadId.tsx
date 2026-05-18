@@ -34,9 +34,11 @@ function ChatWindow({ threadId, initial }: { threadId: string; initial: UIMessag
         prepareSendMessagesRequest: async ({ messages, body }) => {
           const { data } = await supabase.auth.getSession();
           const token = data.session?.access_token;
+          const headers: Record<string, string> = {};
+          if (token) headers.Authorization = `Bearer ${token}`;
           return {
             body: { messages, threadId, ...(body ?? {}) },
-            headers: token ? { Authorization: `Bearer ${token}` } : {},
+            headers,
           };
         },
       }),
