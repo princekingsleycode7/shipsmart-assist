@@ -138,3 +138,27 @@ export const adminUpdateSettings = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+export const adminPromoteByEmail = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((i: unknown) =>
+    z.object({ email: z.string().email().max(160) }).parse(i),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.userId);
+    // Find user by email via auth admin API
+    const { data: list, error: lErr } = await supabaseAdmin.auth.admin.listUsers({
+      page: 1,
+      perPage: 200,
+    });
+    if (lErr) throw new Error(lErr.message);
+    const target = list.users.find(
+      (u) => u.email?.toLowerCase() === data.email.toLowerCase(),
+    );
+    if (!target) throw new Error("No user found with that email");
+    const { error } = await supabaseAdmin
+      .from("user_roles")
+      .upsert({ user_id: target.id, role: "admin" }, { onConflict: "user_id,role" });
+    if (error) throw new Error(error.message);
+    return { ok: true, email: target.email };
+  });

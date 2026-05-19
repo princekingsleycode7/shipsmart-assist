@@ -28,14 +28,11 @@ function Support() {
 
   if (loading) return <p className="py-10 text-center text-muted-foreground">Loading…</p>;
 
+  // Guests: render chat directly via Outlet (support.index renders GuestChat)
   if (!user) {
     return (
-      <div className="py-10">
-        <h1 className="font-display text-4xl md:text-6xl"><em>Delvora</em> Assistant</h1>
-        <p className="mt-2 max-w-md text-muted-foreground">Sign in to start a conversation that's saved across sessions, or jump straight in as a guest.</p>
-        <div className="mt-6 flex gap-3">
-          <Link to="/login" className="pill bg-primary text-primary-foreground">Sign in to save chats</Link>
-        </div>
+      <div className="py-6">
+        <Outlet />
       </div>
     );
   }
