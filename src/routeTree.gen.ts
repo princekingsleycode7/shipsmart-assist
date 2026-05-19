@@ -21,6 +21,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as TrackIdRouteImport } from './routes/track.$id'
 import { Route as SupportThreadIdRouteImport } from './routes/support.$threadId'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminChatsRouteImport } from './routes/admin.chats'
 
 const TrackRoute = TrackRouteImport.update({
@@ -83,6 +84,11 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminChatsRoute = AdminChatsRouteImport.update({
   id: '/chats',
   path: '/chats',
@@ -98,6 +104,7 @@ export interface FileRoutesByFullPath {
   '/support': typeof SupportRouteWithChildren
   '/track': typeof TrackRouteWithChildren
   '/admin/chats': typeof AdminChatsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/api/chat': typeof ApiChatRoute
   '/support/$threadId': typeof SupportThreadIdRoute
   '/track/$id': typeof TrackIdRoute
@@ -111,6 +118,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/track': typeof TrackRouteWithChildren
   '/admin/chats': typeof AdminChatsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/api/chat': typeof ApiChatRoute
   '/support/$threadId': typeof SupportThreadIdRoute
   '/track/$id': typeof TrackIdRoute
@@ -127,6 +135,7 @@ export interface FileRoutesById {
   '/support': typeof SupportRouteWithChildren
   '/track': typeof TrackRouteWithChildren
   '/admin/chats': typeof AdminChatsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/api/chat': typeof ApiChatRoute
   '/support/$threadId': typeof SupportThreadIdRoute
   '/track/$id': typeof TrackIdRoute
@@ -144,6 +153,7 @@ export interface FileRouteTypes {
     | '/support'
     | '/track'
     | '/admin/chats'
+    | '/admin/users'
     | '/api/chat'
     | '/support/$threadId'
     | '/track/$id'
@@ -157,6 +167,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/track'
     | '/admin/chats'
+    | '/admin/users'
     | '/api/chat'
     | '/support/$threadId'
     | '/track/$id'
@@ -172,6 +183,7 @@ export interface FileRouteTypes {
     | '/support'
     | '/track'
     | '/admin/chats'
+    | '/admin/users'
     | '/api/chat'
     | '/support/$threadId'
     | '/track/$id'
@@ -276,6 +288,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/chats': {
       id: '/admin/chats'
       path: '/chats'
@@ -288,11 +307,13 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminChatsRoute: typeof AdminChatsRoute
+  AdminUsersRoute: typeof AdminUsersRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminChatsRoute: AdminChatsRoute,
+  AdminUsersRoute: AdminUsersRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
@@ -334,3 +355,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

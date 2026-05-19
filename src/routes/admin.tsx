@@ -36,9 +36,10 @@ function AdminLayout() {
     <div className="py-6">
       <div className="flex items-center justify-between">
         <h1 className="font-display text-3xl">Admin</h1>
-        <nav className="flex gap-1">
+        <nav className="flex flex-wrap gap-1">
           <Link to="/admin" className="pill bg-secondary text-sm" activeOptions={{ exact: true }} activeProps={{ className: "pill bg-primary text-primary-foreground text-sm" }}>Parcels</Link>
           <Link to="/admin/chats" className="pill bg-secondary text-sm" activeProps={{ className: "pill bg-primary text-primary-foreground text-sm" }}>Live chats</Link>
+          <Link to="/admin/users" className="pill bg-secondary text-sm" activeProps={{ className: "pill bg-primary text-primary-foreground text-sm" }}>Users</Link>
         </nav>
       </div>
       <div className="mt-6"><Outlet /></div>
