@@ -70,36 +70,10 @@ function GuestChat() {
     await sendMessage({ text });
   };
 
-  const saveChat = async () => {
-    const { data } = await supabase.auth.getSession();
-    if (!data.session) {
-      // Stash messages so after login the new thread can be hydrated
-      try {
-        sessionStorage.setItem("guestChat", JSON.stringify(messages));
-      } catch {/* ignore */}
-      nav({ to: "/login" });
-      return;
-    }
-    setSaving(true);
-    try {
-      const t = await create();
-      // Persist current messages to the new thread via direct insert
-      const rows = messages.map((m) => ({
-        thread_id: t.id,
-        role: m.role,
-        parts: m.parts as unknown as never,
-      }));
-      if (rows.length) {
-        const { error } = await supabase.from("chat_messages").insert(rows);
-        if (error) throw error;
-      }
-      toast.success("Chat saved");
-      nav({ to: "/support/$threadId", params: { threadId: t.id } });
-    } catch (e) {
-      toast.error((e as Error).message);
-    } finally {
-      setSaving(false);
-    }
+  const saveChat = () => {
+    // GuestChat only renders when not authed; route to login.
+    toast.info("Sign in to save this chat");
+    nav({ to: "/login" });
   };
 
   const busy = status === "submitted" || status === "streaming";
