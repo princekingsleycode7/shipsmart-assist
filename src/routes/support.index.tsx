@@ -44,7 +44,6 @@ function SupportIndex() {
 
 function GuestChat() {
   const nav = useNavigate();
-  const create = useServerFn(createThread);
   const transport = new DefaultChatTransport({ api: "/api/chat" });
   const { messages, sendMessage, status } = useChat({
     id: "guest",
@@ -55,7 +54,6 @@ function GuestChat() {
   const [input, setInput] = useState("");
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
