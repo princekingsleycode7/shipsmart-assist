@@ -84,10 +84,9 @@ function GuestChat() {
         {messages.length > 0 && (
           <button
             onClick={saveChat}
-            disabled={saving}
-            className="flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground disabled:opacity-50"
+            className="flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground"
           >
-            <Save className="h-3 w-3" /> {saving ? "Saving…" : "Save chat"}
+            <Save className="h-3 w-3" /> Save chat
           </button>
         )}
       </div>
