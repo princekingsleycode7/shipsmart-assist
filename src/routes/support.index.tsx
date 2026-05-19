@@ -8,7 +8,6 @@ import { useAuth } from "@/hooks/use-auth";
 import { createThread } from "@/lib/chat.functions";
 import { Send, Sparkles, Wrench, Save } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/support/")({ component: SupportIndex });
 
