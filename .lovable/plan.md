@@ -1,39 +1,37 @@
 ## Goal
+Redesign `/track/$id` (parcel detail page) to match the uploaded mobile mockup — a clean, card-stacked "Smart Tracking" layout — while keeping all existing data and behavior.
 
-Rework `src/routes/index.tsx` to adopt the **section structure and content rhythm** from the reference logistics site, while keeping Delvora's existing brand: warm cream background, amber `--primary`, Instrument Serif display + Inter body, soft rounded cards.
+## Reference layout (top → bottom)
+1. Header row: back button · "Smart Tracking" title · overflow (•••) menu
+2. Rounded isometric map card with a yellow pin marker
+3. Driver card: avatar + name + "ID: VSK-…" · Call / Message pill buttons
+4. Trip card: From / To row, Customer / Date row
+5. Tracking code block: `#ER 454-152-47N` big serif, parcel box illustration on the right
+6. Sticky bottom "Go Track" CTA pill with yellow circle icon + chevrons
 
-No new dependencies. No backend changes. Only edits to `src/routes/index.tsx` (and a small helper image asset if needed).
+## Changes
+**File edited:** `src/routes/track.$id.tsx` only (UI/presentation).
 
-## New section order
-
-1. **Trust strip** — single dark rounded band with 5–6 partner/client wordmarks rendered as plain text (e.g. OXFAM, DT Global, NAYBA, MOVE, Winsupply, Ferguson) styled as muted text on dark.
-2. **"#1 Nationwide Delivery Logistics Solution"** — two-column: left = stacked image collage (reuse `map-iso.png` + `parcel-box.png`), right = headline with amber "#1", short paragraph, "Get a Quote" (primary) + "Learn More" (ghost) buttons.
-3. **Shipping & Logistics Services** — centered serif heading + 3-card row (Sea / Air / Road) using lucide icons (`Ship`, `Plane`, `Truck`) on amber-tinted cards with a small arrow pill in the corner.
-4. **Powering logistics across business** — two-column: left = heading + paragraph + 3 feature rows with amber check/wifi icons (Nationwide carrier network, Fully-featured logistics software, Exception tracing & live support); right = `map-iso.png` framed in a rounded card.
-5. **Find Locations** — centered serif heading + faded world-map illustration (reuse `map-iso.png`) with a single info pin card overlaid ("California, USA — demo hub").
-6. **Track your shipments** — dark rounded CTA band: left = heading + subtitle on a photographic-feeling dark surface, right = white card with tracking input + "Track Now" amber button → submits to `/track/$id`.
-7. Keep existing footer/nav unchanged.
-8. add a pro design and organised footer, with all relivant links and details.
-
-## Design rules (locked)
-
-- Fonts: `font-display` (Instrument Serif) for all headings, Inter for body. No new fonts.
-- Colors only from existing tokens: `bg-background`, `bg-card`, `bg-secondary`, `bg-primary`, `text-primary`, `text-muted-foreground`, `bg-foreground` (for dark bands), `text-background` (for text on dark). No raw hex.
-- Radii: existing `rounded-2xl` / `rounded-3xl` / `card-soft`.
-- Replace the reference's orange with our amber `--primary`; replace its black sections with `bg-foreground text-background`.
-- Keep current animations minimal (no new libs).
-
-## Technical notes
-
-- File: `src/routes/index.tsx` only.
-- Reuse imports already in repo: `heroTruck`, `mapIso`, `parcelBox` from `@/assets/*`.
-- New lucide icons to import: `Globe`, `Search`, `Ship`, `Plane`, `Truck`, `Wifi`, `Headphones`, `MapPin`, `ArrowUpRight`.
-- Tracking form: local `useState` for tracking number → `useNavigate()` to `/track/$id` with `{ id }` param (mirrors existing `track.index.tsx` pattern).
-- All section widths constrained by existing `__root` container; no layout-shell changes.
-- Responsive: 1-col on mobile, 2/3-col grids at `md:` — matches existing breakpoints.
+- Restructure JSX into the 6 stacked cards above using existing `card-soft` + `pill` tokens.
+- Header: keep back link, center title, add a circular `MoreVertical` button (visual only).
+- Map card: keep `mapIso` image, overlay a yellow pin badge (absolute-positioned `MapPin` in a primary circle).
+- Driver card:
+  - Avatar circle (use `Avatar` from `@/components/ui/avatar`, fallback initials).
+  - Show `driver_name` + small muted `ID: <last 8 of parcel.id>` line.
+  - Two outlined pill buttons side-by-side: Call (tel:) and Message (sms:). Disabled-look when no `driver_phone`.
+  - Move the status badge to a small chip in the top-right of this card.
+- Trip card: 2×2 grid — From/To on row 1, Sender→"Customer" label / ETA→"Date" on row 2 (formatted `dd MMM yyyy`).
+- Tracking code block: large `font-display` `#XX` prefix + remaining code, with a small parcel illustration on the right. Generate a new asset `src/assets/parcel-box.png` (transparent PNG, isometric kraft box with purple tape) — only new file added.
+- Bottom CTA: sticky/pinned within page, yellow circle with package icon + "Go Track" label + double chevron right. Links to `/track` (new search).
+- Timeline section: keep below CTA, collapsed by default behind a "View timeline" toggle to preserve all event data without cluttering the mockup look.
 
 ## Out of scope
+- No DB / server-fn changes (`lookupParcel` already returns everything needed).
+- No changes to `/track` search page or other routes.
+- No new dependencies.
 
-- No new routes, no DB/migrations, no auth changes.
-- No replacing the truck illustration with a container photo.
-- No partner logos as real images (text wordmarks only, to avoid trademark assets).
+## Technical notes
+- Reuse `STATUS_LABEL` map.
+- Date format via `toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "numeric" })`.
+- Avatar fallback = initials from `driver_name`.
+- All colors via existing tokens (`bg-primary`, `bg-secondary`, `text-muted-foreground`, `card-soft`, `pill`) — no hex values.
