@@ -16,6 +16,7 @@ import { Route as LiveChatRouteImport } from './routes/live-chat'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TrackIndexRouteImport } from './routes/track.index'
 import { Route as SupportIndexRouteImport } from './routes/support.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as TrackIdRouteImport } from './routes/track.$id'
@@ -58,6 +59,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const TrackIndexRoute = TrackIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => TrackRoute,
 } as any)
 const SupportIndexRoute = SupportIndexRouteImport.update({
   id: '/',
@@ -110,13 +116,13 @@ export interface FileRoutesByFullPath {
   '/track/$id': typeof TrackIdRoute
   '/admin/': typeof AdminIndexRoute
   '/support/': typeof SupportIndexRoute
+  '/track/': typeof TrackIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
   '/live-chat': typeof LiveChatRoute
   '/login': typeof LoginRoute
-  '/track': typeof TrackRouteWithChildren
   '/admin/chats': typeof AdminChatsRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/chat': typeof ApiChatRoute
@@ -124,6 +130,7 @@ export interface FileRoutesByTo {
   '/track/$id': typeof TrackIdRoute
   '/admin': typeof AdminIndexRoute
   '/support': typeof SupportIndexRoute
+  '/track': typeof TrackIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -141,6 +148,7 @@ export interface FileRoutesById {
   '/track/$id': typeof TrackIdRoute
   '/admin/': typeof AdminIndexRoute
   '/support/': typeof SupportIndexRoute
+  '/track/': typeof TrackIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -159,13 +167,13 @@ export interface FileRouteTypes {
     | '/track/$id'
     | '/admin/'
     | '/support/'
+    | '/track/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/contact'
     | '/live-chat'
     | '/login'
-    | '/track'
     | '/admin/chats'
     | '/admin/users'
     | '/api/chat'
@@ -173,6 +181,7 @@ export interface FileRouteTypes {
     | '/track/$id'
     | '/admin'
     | '/support'
+    | '/track'
   id:
     | '__root__'
     | '/'
@@ -189,6 +198,7 @@ export interface FileRouteTypes {
     | '/track/$id'
     | '/admin/'
     | '/support/'
+    | '/track/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -252,6 +262,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/track/': {
+      id: '/track/'
+      path: '/'
+      fullPath: '/track/'
+      preLoaderRoute: typeof TrackIndexRouteImport
+      parentRoute: typeof TrackRoute
     }
     '/support/': {
       id: '/support/'
@@ -334,10 +351,12 @@ const SupportRouteWithChildren =
 
 interface TrackRouteChildren {
   TrackIdRoute: typeof TrackIdRoute
+  TrackIndexRoute: typeof TrackIndexRoute
 }
 
 const TrackRouteChildren: TrackRouteChildren = {
   TrackIdRoute: TrackIdRoute,
+  TrackIndexRoute: TrackIndexRoute,
 }
 
 const TrackRouteWithChildren = TrackRoute._addFileChildren(TrackRouteChildren)
