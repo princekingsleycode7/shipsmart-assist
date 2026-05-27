@@ -5,27 +5,62 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
+import { Link } from "@tanstack/react-router";
 
-interface Message {
-  id: string;
-  sender: "user" | "agent";
-  text: string;
-  time: string;
-}
+// Import your existing project hooks and server actions
+import { useAuth } from "@/hooks/use-auth";
+import { useServerFn } from "@tanstack/react-start";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getOrCreateConversation, listConversationMessages, sendSupportMessage } from "@/lib/support.functions";
+import { supabase } from "@/integrations/supabase/client";
 
 export function LiveSupportWidget() {
+  const { user, loading } = useAuth();
+  const qc = useQueryClient();
+  
+  // Connect your project's tested server functions
+  const conv = useServerFn(getOrCreateConversation);
+  const list = useServerFn(listConversationMessages);
+  const send = useServerFn(sendSupportMessage);
+
   const [isOpen, setIsOpen] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
   const [inputMessage, setInputMessage] = useState("");
-  
-  // Connect this array to your tested message state
-  const [messages, setMessages] = useState<Message[]>([
-    { id: "1", sender: "agent", text: "Hello! Thanks for reaching out to ShipSmart. How can I help you with your shipment today?", time: "10:00 AM" }
-  ]);
-
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // 1. Monitor page scrolling to shift button position near the scroll-up element
+  // 1. Fetch or create the active conversation if the user is authenticated
+  const { data: conversation } = useQuery({
+    queryKey: ["live-conv", user?.id],
+    queryFn: () => conv(),
+    enabled: !!user && isOpen, // Only execute fetch sequence when widget interface opens
+  });
+
+  // 2. Fetch all persisted database messages tied to this conversation
+  const { data: messages } = useQuery({
+    queryKey: ["live-msgs", conversation?.id],
+    queryFn: () => list({ data: { conversationId: conversation!.id } }),
+    enabled: !!conversation?.id,
+  });
+
+  // 3. Keep the stream real-time when new items hit the database pipeline
+  useEffect(() => {
+    if (!conversation?.id) return;
+    const ch = supabase
+      .channel(`widget-support:${conversation.id}`)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "support_messages", filter: `conversation_id=eq.${conversation.id}` },
+        () => {
+          qc.invalidateQueries({ queryKey: ["live-msgs", conversation.id] });
+        }
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(ch);
+    };
+  }, [conversation?.id, qc]);
+
+  // 4. Handle button shift configuration based on window scrolling position
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 100) {
@@ -34,52 +69,39 @@ export function LiveSupportWidget() {
         setHasScrolled(false);
       }
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Auto-scroll chat feed on new messages
+  // 5. Instantly align chat viewing pane on new item updates
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages, isOpen]);
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  // 6. Handle action requests to persist text records to the backend
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputMessage.trim()) return;
+    const text = inputMessage.trim();
+    if (!text || !conversation?.id) return;
 
-    const newMsg: Message = {
-      id: Date.now().toString(),
-      sender: "user",
-      text: inputMessage,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    };
-
-    setMessages((prev) => [...prev, newMsg]);
-    setInputMessage("");
+    setInputMessage(""); // Clear text input array field layout immediately
+    await send({ data: { conversationId: conversation.id, body: text } });
+    qc.invalidateQueries({ queryKey: ["live-msgs", conversation.id] });
   };
 
   return (
-    // Fixed container wrapping the entire setup
     <div className="fixed bottom-6 z-50 font-sans transition-all duration-300 ease-in-out">
       
-      {/* FLOATING ACTION BUTTON */}
+      {/* FLOATING ACTION TRIGGER BUTTON */}
       {!isOpen && (
         <Button
           onClick={() => setIsOpen(true)}
           className={`h-14 w-14 text-white shadow-xl transition-all duration-300 hover:scale-105 border border-orange-500/20 bg-[#0F172A] hover:bg-[#1E293B]
-            /* Base position (Bottom right) */
             fixed bottom-6
-            
-            /* Shift 50px left on scroll, otherwise default right-6 */
             ${hasScrolled ? "right-[calc(1.5rem+50px)]" : "right-6"}
-            
-            /* Square corners by default, transforms to rounded-2xl when page scrolls */
             ${hasScrolled ? "rounded-2xl" : "rounded-none"}
-            
-            /* Mobile Responsiveness: Adjust position slightly on small screens if necessary */
             sm:bottom-6 max-sm:bottom-4
           `}
         >
@@ -87,20 +109,13 @@ export function LiveSupportWidget() {
         </Button>
       )}
 
-      {/* CHAT WINDOW INTERFACE */}
+      {/* EXPANDED INTERFACE MODULE */}
       {isOpen && (
-        <Card className={`
-          shadow-2xl flex flex-col overflow-hidden border border-slate-200 bg-[#F8FAFC] transition-all duration-300 animate-in slide-in-from-bottom-5
-          
-          /* Mobile Responsiveness Rules */
-          /* Desktop layout sizes */
+        <Card className="shadow-2xl flex flex-col overflow-hidden border border-slate-200 bg-[#F8FAFC] transition-all duration-300 animate-in slide-in-from-bottom-5
           md:w-[380px] md:h-[520px] md:fixed md:bottom-6 md:right-6 md:rounded-2xl
-          
-          /* Fullscreen viewport layout on mobile devices */
-          max-md:fixed max-md:inset-0 max-md:w-full max-md:h-full max-md:rounded-none
-        `}>
-          
-          {/* HEADER PANEL */}
+          max-md:fixed max-md:inset-0 max-md:w-full max-md:h-full max-md:rounded-none"
+        >
+          {/* HEADER BAR PANEL */}
           <div className="bg-[#0F172A] px-4 py-4 text-white flex items-center justify-between border-b border-orange-500/20 max-md:pt-8">
             <div className="flex items-center gap-3">
               <div className="relative">
@@ -130,63 +145,93 @@ export function LiveSupportWidget() {
             </div>
           </div>
 
-          {/* CHAT STREAM CONTAINER */}
-          <ScrollArea className="flex-1 p-4 overflow-y-auto">
-            <div className="space-y-4 flex flex-col">
-              {messages.map((msg) => {
-                const isUser = msg.sender === "user";
-                return (
-                  <div
-                    key={msg.id}
-                    className={`flex flex-col max-w-[85%] ${
-                      isUser ? "self-end items-end" : "self-start items-start"
+          {/* RENDERING INTERACTIVE INTERFACE BODY STATES */}
+          {loading ? (
+            <div className="flex-1 flex items-center justify-center text-sm text-slate-400">
+              Loading conversation...
+            </div>
+          ) : !user ? (
+            /* Authentication Fallback Request layout */
+            <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
+              <h4 className="font-semibold text-slate-800 text-base mb-1">Sign in to start chat</h4>
+              <p className="text-xs text-slate-400 mb-4 max-w-[240px]">We require authentication to log messages directly to your shipment profile.</p>
+              <Link 
+                to="/login" 
+                onClick={() => setIsOpen(false)}
+                className="inline-flex items-center justify-center text-sm font-medium bg-orange-500 hover:bg-orange-600 text-white px-5 py-2 rounded-xl transition-all shadow-md"
+              >
+                Sign In
+              </Link>
+            </div>
+          ) : (
+            <>
+              {/* PERSISTED CHAT FLOW SCROLL AREA */}
+              <ScrollArea className="flex-1 p-4 overflow-y-auto">
+                <div className="space-y-4 flex flex-col">
+                  {messages?.map((msg) => {
+                    // Check if sender matching local auth session payload id
+                    const isUser = msg.sender_id === user.id;
+                    return (
+                      <div
+                        key={msg.id}
+                        className={`flex flex-col max-w-[85%] ${
+                          isUser ? "self-end items-end" : "self-start items-start"
+                        }`}
+                      >
+                        <div
+                          className={`px-4 py-2.5 rounded-2xl text-[14px] leading-relaxed shadow-sm ${
+                            isUser
+                              ? "bg-orange-500 text-white rounded-tr-none"
+                              : "bg-white text-slate-800 border border-slate-100 rounded-tl-none"
+                          }`}
+                        >
+                          {msg.body}
+                        </div>
+                        {msg.created_at && (
+                          <span className="text-[10px] text-slate-400 mt-1 px-1 tracking-wider">
+                            {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                  {messages && messages.length === 0 && (
+                    <p className="text-center text-xs text-slate-400 py-8">
+                      Say hi to start the conversation!
+                    </p>
+                  )}
+                  <div ref={scrollRef} />
+                </div>
+              </ScrollArea>
+
+              {/* MESSAGE INTERACTION FOOTER INPUT */}
+              <form
+                onSubmit={handleSendMessage}
+                className="p-3 bg-white border-t border-slate-100 flex items-center gap-2 max-md:pb-6"
+              >
+                <div className="relative flex-1 flex items-center">
+                  <Input
+                    value={inputMessage}
+                    onChange={(e) => setInputMessage(e.target.value)}
+                    placeholder="Type your message here..."
+                    className="w-full bg-slate-50 border-slate-200 rounded-xl pr-10 focus-visible:ring-orange-500 text-sm h-10 text-slate-800 placeholder:text-slate-400"
+                  />
+                  <Button
+                    type="submit"
+                    disabled={!inputMessage.trim()}
+                    size="icon"
+                    className={`absolute right-1.5 top-1/2 -translate-y-1/2 h-7 w-7 rounded-lg transition-all ${
+                      inputMessage.trim() 
+                        ? "bg-orange-500 hover:bg-orange-600 text-white" 
+                        : "bg-transparent text-slate-300"
                     }`}
                   >
-                    <div
-                      className={`px-4 py-2.5 rounded-2xl text-[14px] leading-relaxed shadow-sm ${
-                        isUser
-                          ? "bg-orange-500 text-white rounded-tr-none"
-                          : "bg-white text-slate-800 border border-slate-100 rounded-tl-none"
-                      }`}
-                    >
-                      {msg.text}
-                    </div>
-                    <span className="text-[10px] text-slate-400 mt-1 px-1 tracking-wider">
-                      {msg.time}
-                    </span>
-                  </div>
-                );
-              })}
-              <div ref={scrollRef} />
-            </div>
-          </ScrollArea>
-
-          {/* INPUT BAR FOOTER */}
-          <form
-            onSubmit={handleSendMessage}
-            className="p-3 bg-white border-t border-slate-100 flex items-center gap-2 max-md:pb-6"
-          >
-            <div className="relative flex-1 flex items-center">
-              <Input
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                placeholder="Type your message here..."
-                className="w-full bg-slate-50 border-slate-200 rounded-xl pr-10 focus-visible:ring-orange-500 text-sm h-10 text-slate-800 placeholder:text-slate-400"
-              />
-              <Button
-                type="submit"
-                disabled={!inputMessage.trim()}
-                size="icon"
-                className={`absolute right-1.5 top-1/2 -translate-y-1/2 h-7 w-7 rounded-lg transition-all ${
-                  inputMessage.trim() 
-                    ? "bg-orange-500 hover:bg-orange-600 text-white" 
-                    : "bg-transparent text-slate-300"
-                }`}
-              >
-                <Send className="h-3.5 w-3.5" />
-              </Button>
-            </div>
-          </form>
+                    <Send className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              </form>
+            </>
+          )}
 
         </Card>
       )}
