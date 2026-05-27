@@ -4,8 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { checkIsAdmin } from "@/lib/admin.functions";
+import { TemplateShell } from "@/components/template-page";
 
-export const Route = createFileRoute("/admin")({ component: AdminLayout });
+export const Route = createFileRoute("/admin")({
+  component: () => <TemplateShell><AdminLayout /></TemplateShell>,
+});
 
 function AdminLayout() {
   const { user, loading } = useAuth();
