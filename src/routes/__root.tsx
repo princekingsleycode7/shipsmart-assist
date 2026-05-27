@@ -122,13 +122,7 @@ function Shell() {
     router.navigate({ to: "/" });
   };
 
-  return (
-    <div className="min-h-screen pb-24 md:pb-0">
-      <TopNav isAdmin={isAdmin} isAuthed={!!user && !loading} onLogout={onLogout} />
-      <main className="mx-auto w-full max-w-5xl px-4 md:px-6">
-        <Outlet />
-      </main>
-      <BottomNav isAdmin={isAdmin} />
-    </div>
-  );
+  // Marketing template provides its own chrome; backend pages use TemplateShell.
+  void isAdmin; void loading; void user; void onLogout;
+  return <Outlet />;
 }
