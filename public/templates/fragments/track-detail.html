@@ -1,0 +1,267 @@
+<header id="ft-header" class="ft-header-section header-style-one">
+  <div class="ft-header-content-wrapper position-relative">
+    <div class="container">
+      <div class="ft-header-content position-relative">
+        <div class="ft-brand-logo">
+          <a href="/" target="_top"><img src="/assets/img/logo/logo-white.png" alt="" width="270"></a>
+        </div>
+        <div class="ft-header-menu-top-cta position-relative">
+          <div class="ft-header-main-menu d-flex justify-content-end align-items-center">
+            <nav class="ft-main-navigation clearfix ul-li">
+              <ul id="ft-main-nav" class="nav navbar-nav clearfix">
+                <li><a href="/" target="_top">Home</a></li>
+                <li><a href="/about.html" target="_top">About</a></li>
+                <li><a href="/service.html" target="_top">Service</a></li>
+                <li><a href="/contact.html" target="_top">Contact</a></li>
+              </ul>
+            </nav>
+            <div class="ft-header-cta-btn">
+              <a class="d-flex justify-content-center align-items-center" href="/track" target="_top">Track</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+<div id="loadingState">
+  <div class="spinner"></div>
+  <p style="color:#888; font-size:15px;">Loading shipment details…</p>
+</div>
+
+
+<div id="errorState" style="display:none;">
+  <div style="text-align:center; max-width:400px; padding:20px;">
+    <i class="fas fa-box-open" style="font-size:3rem; color:#ddd; margin-bottom:16px;"></i>
+    <h4 style="color:#1a1a2e; font-weight:700;">Shipment Not Found</h4>
+    <p style="color:#888; font-size:14px;" id="errorMsg">We couldn't find that tracking code. Please check and try again.</p>
+    <a href="/track" target="_top" class="btn-track" style="
+      display:inline-block; background:#f5a623; color:#fff; padding:12px 32px;
+      border-radius:8px; text-decoration:none; font-weight:600; margin-top:12px;">
+      <i class="fas fa-arrow-left" style="margin-right:6px;"></i> Try Again
+    </a>
+  </div>
+</div>
+
+
+<div id="detailContent" style="display:none;">
+
+  
+  <section class="detail-hero">
+    <div class="container">
+      <a href="/track" target="_top" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Back to tracking
+      </a>
+      <div class="tracking-code-label">Tracking Code</div>
+      <div class="tracking-code-val" id="displayCode">—</div>
+      <span class="status-pill" id="statusBadge">—</span>
+    </div>
+  </section>
+
+  
+  <div class="cards-area">
+    <div class="container">
+
+      
+      <div class="detail-card">
+        <div class="card-title"><i class="fas fa-route" style="margin-right:6px;color:#f5a623;"></i>Route</div>
+        <div class="route-row">
+          <div class="route-point">
+            <div class="label">From</div>
+            <div class="value" id="originVal">—</div>
+          </div>
+          <div class="route-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+          <div class="route-point" style="text-align:right;">
+            <div class="label">To</div>
+            <div class="value" id="destVal">—</div>
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="detail-card">
+        <div class="card-title"><i class="fas fa-info-circle" style="margin-right:6px;color:#f5a623;"></i>Shipment Info</div>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="label">Recipient</div>
+            <div class="value" id="recipientVal">—</div>
+          </div>
+          <div class="info-item">
+            <div class="label">ETA</div>
+            <div class="value" id="etaVal">—</div>
+          </div>
+          <div class="info-item">
+            <div class="label">Shipment ID</div>
+            <div class="value" id="shipIdVal">—</div>
+          </div>
+          <div class="info-item">
+            <div class="label">Created</div>
+            <div class="value" id="createdVal">—</div>
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="detail-card">
+        <div class="card-title"><i class="fas fa-user-tie" style="margin-right:6px;color:#f5a623;"></i>Driver / Agent</div>
+        <div class="driver-row">
+          <div class="driver-avatar" id="driverAvatar">?</div>
+          <div>
+            <div class="driver-name" id="driverName">Unassigned</div>
+            <div class="driver-id" id="driverIdEl">—</div>
+          </div>
+        </div>
+        <div class="driver-actions">
+          <a id="callBtn" href="#" class="driver-btn disabled">
+            <i class="fas fa-phone"></i> Call
+          </a>
+          <a id="smsBtn" href="#" class="driver-btn disabled">
+            <i class="fas fa-comment-alt"></i> Message
+          </a>
+        </div>
+      </div>
+
+      
+      <div class="detail-card">
+        <div class="card-title"><i class="fas fa-stream" style="margin-right:6px;color:#f5a623;"></i>Timeline</div>
+        <ul class="timeline" id="timelineList">
+          <li style="color:#bbb; font-size:14px;">No events yet.</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<footer id="ft-footer" class="ft-footer-section">
+  <div class="container">
+    <div class="ft-footer-copywrite-1 text-center">
+      <span>Copyright &copy; 2023 Safefreight Way. All Rights Reserved</span>
+    </div>
+  </div>
+</footer>
+
+<script src="/assets/js/jquery.min.js"></script>
+<script src="/assets/js/bootstrap.min.js"></script>
+<script>
+// ============================================================
+// SUPABASE CONFIG
+// Find these values in: src/integrations/supabase/client.ts
+// ============================================================
+// No hardcoding needed — reads straight from the parent React app
+var SUPABASE_URL      = window.top.__SB_URL;
+var SUPABASE_ANON_KEY = window.top.__SB_KEY;
+// ============================================================
+// NOTE: Adjust 'parcel_events' below to match your actual events table name
+var EVENTS_TABLE = 'parcel_events';
+// ============================================================
+
+var STATUS_LABELS = {
+  pending:          'Pending',
+  picked_up:        'Picked Up',
+  in_transit:       'In Transit',
+  out_for_delivery: 'Out for Delivery',
+  delivered:        'Delivered',
+  cancelled:        'Cancelled'
+};
+
+function initials(name) {
+  if (!name) return '?';
+  return name.trim().split(/\s+/).slice(0,2).map(function(n){ return n[0].toUpperCase(); }).join('');
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString(undefined, { day:'2-digit', month:'short', year:'numeric' });
+}
+
+function fmtDateTime(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleString();
+}
+
+function showLoading()      { document.getElementById('loadingState').style.display='flex'; document.getElementById('errorState').style.display='none'; document.getElementById('detailContent').style.display='none'; }
+function showError(msg)     { document.getElementById('loadingState').style.display='none'; document.getElementById('errorState').style.display='flex'; document.getElementById('detailContent').style.display='none'; if(msg) document.getElementById('errorMsg').textContent=msg; }
+function showDetail()       { document.getElementById('loadingState').style.display='none'; document.getElementById('errorState').style.display='none'; document.getElementById('detailContent').style.display='block'; }
+
+function renderParcel(parcel, events) {
+  var statusKey = parcel.status || 'pending';
+  document.getElementById('displayCode').textContent  = parcel.tracking_code || '—';
+  document.getElementById('statusBadge').textContent  = STATUS_LABELS[statusKey] || statusKey;
+  document.getElementById('statusBadge').className    = 'status-pill s-' + statusKey;
+  document.getElementById('originVal').textContent    = parcel.origin      || '—';
+  document.getElementById('destVal').textContent      = parcel.destination || '—';
+  document.getElementById('recipientVal').textContent = parcel.recipient   || '—';
+  document.getElementById('etaVal').textContent       = fmtDate(parcel.eta);
+  document.getElementById('shipIdVal').textContent    = (parcel.id || '').slice(0,8).toUpperCase();
+  document.getElementById('createdVal').textContent   = fmtDate(parcel.created_at);
+
+  // Driver
+  var name = parcel.driver_name;
+  document.getElementById('driverAvatar').textContent = initials(name);
+  document.getElementById('driverName').textContent   = name || 'Unassigned';
+  document.getElementById('driverIdEl').textContent   = parcel.driver_phone || 'No contact info';
+  if (parcel.driver_phone) {
+    var callBtn = document.getElementById('callBtn');
+    var smsBtn  = document.getElementById('smsBtn');
+    callBtn.href = 'tel:' + parcel.driver_phone;
+    callBtn.classList.remove('disabled');
+    smsBtn.href  = 'sms:' + parcel.driver_phone;
+    smsBtn.classList.remove('disabled');
+  }
+
+  // Timeline
+  var list = document.getElementById('timelineList');
+  if (events && events.length > 0) {
+    list.innerHTML = '';
+    events.forEach(function(ev) {
+      var li = document.createElement('li');
+      li.innerHTML =
+        '<div class="tl-dot"><i class="fas fa-map-marker-alt"></i></div>' +
+        '<div class="tl-content">' +
+          '<div class="tl-title">' + (STATUS_LABELS[ev.status] || ev.status) + '</div>' +
+          '<div class="tl-loc"><i class="fas fa-location-arrow" style="font-size:11px;margin-right:4px;"></i>' + (ev.location || '—') + '</div>' +
+          '<div class="tl-time"><i class="fas fa-clock" style="font-size:11px;margin-right:4px;"></i>' + fmtDateTime(ev.occurred_at) + '</div>' +
+          (ev.note ? '<div class="tl-note">' + ev.note + '</div>' : '') +
+        '</div>';
+      list.appendChild(li);
+    });
+  }
+
+  showDetail();
+}
+
+(async function() {
+  showLoading();
+
+  // Get tracking code from URL param
+  var params = new URLSearchParams(window.location.search);
+  var code = params.get('code');
+  if (!code) { showError('No tracking code provided.'); return; }
+
+  try {
+    var sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Fetch parcel
+    var res = await sb.from('parcels').select('*').eq('tracking_code', code).single();
+    if (res.error || !res.data) {
+      showError('Tracking code "' + code + '" was not found. Please double-check and try again.');
+      return;
+    }
+    var parcel = res.data;
+
+    // Fetch events
+    var evRes = await sb.from(EVENTS_TABLE).select('*').eq('parcel_id', parcel.id).order('occurred_at', { ascending: false });
+    var events = evRes.data || [];
+
+    renderParcel(parcel, events);
+
+  } catch(e) {
+    console.error(e);
+    showError('Something went wrong loading this shipment. Please try again.');
+  }
+})();
+</script>
