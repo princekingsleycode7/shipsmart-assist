@@ -14,6 +14,7 @@ import { BottomNav, TopNav } from "@/components/nav";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { checkIsAdmin } from "@/lib/admin.functions";
+import { LiveSupportWidget } from "@/components/chat-widget";
 
 import appCss from "../styles.css?url";
 
@@ -81,7 +82,9 @@ function RootShell({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head><HeadContent /></head>
-      <body>{children}<Scripts /></body>
+      <body>{children}
+        <LiveSupportWidget />
+        <Scripts /></body>
     </html>
   );
 }

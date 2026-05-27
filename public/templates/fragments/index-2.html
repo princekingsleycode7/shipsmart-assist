@@ -361,15 +361,17 @@ style="z-index:11;background-color:#00044b;font-family:'Poppins';"
 	<section id="ft-booking-form" class="ft-booking-form-section">
 		<div class="container">
 			<div class="ft-booking-form-content position-relative">
-				<form method="GET" action="../external.html?link=https://safefrtway.com/tracker_info.php">
-					<div class="booking-form-input-wrapper d-flex justify-content-center flex-wrap">
-						<label class="booking-form-input position-relative">
-							<span class="booking-form-icon"><i class="flaticon-face-detection"></i></span>
-							<input type="text" name="tracker" placeholder="Your Tracking  ID Now">
-						</label>
-						<button class="ft-sb-button" type="submit">Track Order Now</button>
-					</div>
-				</form>
+			
+
+				<form onsubmit="event.preventDefault(); var code = this.tracker.value.trim(); if(code) window.top.location.href = '/track/' + encodeURIComponent(code);">
+    <div class="booking-form-input-wrapper d-flex justify-content-center flex-wrap">
+        <label class="booking-form-input position-relative">
+            <span class="booking-form-icon"><i class="flaticon-face-detection"></i></span>
+            <input type="text" name="tracker" placeholder="Your Tracking ID Now">
+        </label>
+        <button class="ft-sb-button" type="submit">Track Order Now</button>
+    </div>
+</form>
 			</div>
 		</div>
 	</section>
