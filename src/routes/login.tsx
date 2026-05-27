@@ -3,8 +3,14 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
+import { TemplateShell } from "@/components/template-page";
 
-export const Route = createFileRoute("/login")({ component: Login });
+export const Route = createFileRoute("/login")({ component: LoginWrapped });
+
+function LoginWrapped() {
+  return <TemplateShell><Login /></TemplateShell>;
+}
+
 
 function Login() {
   const nav = useNavigate();

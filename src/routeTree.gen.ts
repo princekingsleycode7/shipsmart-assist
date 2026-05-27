@@ -9,12 +9,15 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TrackingRouteImport } from './routes/tracking'
 import { Route as TrackRouteImport } from './routes/track'
 import { Route as SupportRouteImport } from './routes/support'
+import { Route as ServicesRouteImport } from './routes/services'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LiveChatRouteImport } from './routes/live-chat'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TrackIndexRouteImport } from './routes/track.index'
 import { Route as SupportIndexRouteImport } from './routes/support.index'
@@ -25,6 +28,11 @@ import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminChatsRouteImport } from './routes/admin.chats'
 
+const TrackingRoute = TrackingRouteImport.update({
+  id: '/tracking',
+  path: '/tracking',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TrackRoute = TrackRouteImport.update({
   id: '/track',
   path: '/track',
@@ -33,6 +41,11 @@ const TrackRoute = TrackRouteImport.update({
 const SupportRoute = SupportRouteImport.update({
   id: '/support',
   path: '/support',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicesRoute = ServicesRouteImport.update({
+  id: '/services',
+  path: '/services',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -53,6 +66,11 @@ const ContactRoute = ContactRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -103,12 +121,15 @@ const AdminChatsRoute = AdminChatsRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/admin': typeof AdminRouteWithChildren
   '/contact': typeof ContactRoute
   '/live-chat': typeof LiveChatRoute
   '/login': typeof LoginRoute
+  '/services': typeof ServicesRoute
   '/support': typeof SupportRouteWithChildren
   '/track': typeof TrackRouteWithChildren
+  '/tracking': typeof TrackingRoute
   '/admin/chats': typeof AdminChatsRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/chat': typeof ApiChatRoute
@@ -120,9 +141,12 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/live-chat': typeof LiveChatRoute
   '/login': typeof LoginRoute
+  '/services': typeof ServicesRoute
+  '/tracking': typeof TrackingRoute
   '/admin/chats': typeof AdminChatsRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/chat': typeof ApiChatRoute
@@ -135,12 +159,15 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/admin': typeof AdminRouteWithChildren
   '/contact': typeof ContactRoute
   '/live-chat': typeof LiveChatRoute
   '/login': typeof LoginRoute
+  '/services': typeof ServicesRoute
   '/support': typeof SupportRouteWithChildren
   '/track': typeof TrackRouteWithChildren
+  '/tracking': typeof TrackingRoute
   '/admin/chats': typeof AdminChatsRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/chat': typeof ApiChatRoute
@@ -154,12 +181,15 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
     | '/admin'
     | '/contact'
     | '/live-chat'
     | '/login'
+    | '/services'
     | '/support'
     | '/track'
+    | '/tracking'
     | '/admin/chats'
     | '/admin/users'
     | '/api/chat'
@@ -171,9 +201,12 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
     | '/contact'
     | '/live-chat'
     | '/login'
+    | '/services'
+    | '/tracking'
     | '/admin/chats'
     | '/admin/users'
     | '/api/chat'
@@ -185,12 +218,15 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/about'
     | '/admin'
     | '/contact'
     | '/live-chat'
     | '/login'
+    | '/services'
     | '/support'
     | '/track'
+    | '/tracking'
     | '/admin/chats'
     | '/admin/users'
     | '/api/chat'
@@ -203,17 +239,27 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRouteWithChildren
   ContactRoute: typeof ContactRoute
   LiveChatRoute: typeof LiveChatRoute
   LoginRoute: typeof LoginRoute
+  ServicesRoute: typeof ServicesRoute
   SupportRoute: typeof SupportRouteWithChildren
   TrackRoute: typeof TrackRouteWithChildren
+  TrackingRoute: typeof TrackingRoute
   ApiChatRoute: typeof ApiChatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tracking': {
+      id: '/tracking'
+      path: '/tracking'
+      fullPath: '/tracking'
+      preLoaderRoute: typeof TrackingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/track': {
       id: '/track'
       path: '/track'
@@ -226,6 +272,13 @@ declare module '@tanstack/react-router' {
       path: '/support'
       fullPath: '/support'
       preLoaderRoute: typeof SupportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/services': {
+      id: '/services'
+      path: '/services'
+      fullPath: '/services'
+      preLoaderRoute: typeof ServicesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -254,6 +307,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -363,12 +423,15 @@ const TrackRouteWithChildren = TrackRoute._addFileChildren(TrackRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
   AdminRoute: AdminRouteWithChildren,
   ContactRoute: ContactRoute,
   LiveChatRoute: LiveChatRoute,
   LoginRoute: LoginRoute,
+  ServicesRoute: ServicesRoute,
   SupportRoute: SupportRouteWithChildren,
   TrackRoute: TrackRouteWithChildren,
+  TrackingRoute: TrackingRoute,
   ApiChatRoute: ApiChatRoute,
 }
 export const routeTree = rootRouteImport

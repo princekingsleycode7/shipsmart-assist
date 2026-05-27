@@ -1,0 +1,103 @@
+<header id="ft-header" class="ft-header-section header-style-one">
+  <div class="ft-header-content-wrapper position-relative">
+    <div class="container">
+      <div class="ft-header-content position-relative">
+        <div class="ft-brand-logo">
+          <a href="/" target="_top"><img src="/assets/img/logo/logo-white.png" alt="" width="270"></a>
+        </div>
+        <div class="ft-header-menu-top-cta position-relative">
+          <div class="ft-header-main-menu d-flex justify-content-end align-items-center">
+            <nav class="ft-main-navigation clearfix ul-li">
+              <ul id="ft-main-nav" class="nav navbar-nav clearfix">
+                <li><a href="/" target="_top">Home</a></li>
+                <li><a href="/about.html" target="_top">About</a></li>
+                <li><a href="/service.html" target="_top">Service</a></li>
+                <li><a href="/contact.html" target="_top">Contact</a></li>
+              </ul>
+            </nav>
+            <div class="ft-header-cta-btn">
+              <a class="d-flex justify-content-center align-items-center" href="/track" target="_top">Track</a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mobile_menu position-relative">
+          <div class="mobile_menu_button open_mobile_menu"><i class="fal fa-bars"></i></div>
+          <div class="mobile_menu_wrap">
+            <div class="mobile_menu_overlay open_mobile_menu"></div>
+            <div class="mobile_menu_content">
+              <div class="mobile_menu_close open_mobile_menu"><i class="fal fa-times"></i></div>
+              <div class="m-brand-logo">
+                <a href="/" target="_top"><img src="/assets/img/logo/logo4.png" alt=""></a>
+              </div>
+              <nav class="mobile-main-navigation clearfix ul-li">
+                <ul class="nav navbar-nav clearfix">
+                  <li><a href="/" target="_top">Home</a></li>
+                  <li><a href="/about.html" target="_top">About</a></li>
+                  <li><a href="/service.html" target="_top">Service</a></li>
+                  <li><a href="/contact.html" target="_top">Contact</a></li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+<section class="track-hero">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-6 col-md-8">
+        <div class="text-center mb-4">
+          <h2 style="color:#fff; font-weight:700; font-size:2.2rem;">Track Your Shipment</h2>
+          <p style="color:rgba(255,255,255,0.65); font-size:1rem; margin-top:8px;">
+            Enter your tracking code for real-time status and delivery info.
+          </p>
+        </div>
+        <div class="track-card">
+          <h4><i class="fas fa-shipping-fast" style="color:#f5a623;margin-right:8px;"></i>Enter Tracking Code</h4>
+          <p class="sub">Check live parcel location and estimated arrival.</p>
+          <div class="input-group">
+            <input id="trackInput" type="text" class="form-control track-input"
+              placeholder="e.g. ER-454-152-47N" autocomplete="off" />
+            <div class="input-group-append">
+              <button class="btn-track" onclick="doTrack()">
+                <i class="fas fa-search" style="margin-right:6px;"></i>Track Now
+              </button>
+            </div>
+          </div>
+          <p class="track-hint"><i class="fas fa-info-circle"></i> Try: <strong>ER-454-152-47N</strong></p>
+          <p class="err-msg" id="errMsg"><i class="fas fa-exclamation-circle"></i> Please enter a tracking code.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<footer id="ft-footer" class="ft-footer-section">
+  <div class="container">
+    <div class="ft-footer-copywrite-1 text-center">
+      <span>Copyright &copy; 2023 Safefreight Way. All Rights Reserved</span>
+    </div>
+  </div>
+</footer>
+
+<script src="/assets/js/jquery.min.js"></script>
+<script src="/assets/js/bootstrap.min.js"></script>
+<script src="/assets/js/script.js"></script>
+<script>
+  function doTrack() {
+    var code = document.getElementById('trackInput').value.trim();
+    var err  = document.getElementById('errMsg');
+    if (!code) { err.style.display = 'block'; return; }
+    err.style.display = 'none';
+    window.top.location.href = '/track/' + encodeURIComponent(code);
+  }
+  document.getElementById('trackInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') doTrack();
+  });
+</script>
