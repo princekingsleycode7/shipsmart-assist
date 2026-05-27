@@ -403,15 +403,25 @@ style="z-index:11;background-color:#00044b;font-family:'Poppins';"
 	<section id="ft-booking-form" class="ft-booking-form-section">
 		<div class="container">
 			<div class="ft-booking-form-content position-relative">
-				<form method="GET" action="../external.html?link=https://safefrtway.com/tracker_info.php">
+				<form onsubmit="homeTrack(event)">
 					<div class="booking-form-input-wrapper d-flex justify-content-center flex-wrap">
 						<label class="booking-form-input position-relative">
 							<span class="booking-form-icon"><i class="flaticon-face-detection"></i></span>
-							<input type="text" name="tracker" placeholder="Your Tracking  ID Now">
+							<input id="homeTrackInput" type="text" name="tracker" placeholder="Your Tracking ID Now">
 						</label>
 						<button class="ft-sb-button" type="submit">Track Order Now</button>
 					</div>
 				</form>
+				<script>
+					function homeTrack(e) {
+						e.preventDefault();
+						var code = document.getElementById('homeTrackInput').value.trim();
+						if (!code) return;
+						window.top.location.href = '/track/' + encodeURIComponent(code);
+					}
+				</script>
+
+				
 			</div>
 		</div>
 	</section>
@@ -896,7 +906,18 @@ Air freight parcel delivery is one areas which we have been successful in the th
 </script>
 <!-- /whatsapp widget -->
 
-
+<script>
+  function doTrack() {
+    var code = document.getElementById('trackInput').value.trim();
+    var err  = document.getElementById('errMsg');
+    if (!code) { err.style.display = 'block'; return; }
+    err.style.display = 'none';
+    window.top.location.href = '/track/' + encodeURIComponent(code);
+  }
+  document.getElementById('trackInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') doTrack();
+  });
+</script>
 
 
 <!-- Smartsupp Live Chat script -->

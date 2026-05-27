@@ -71,6 +71,17 @@ function loadScriptsOnce(): Promise<void> {
 }
 
 async function reinitTemplate(container: HTMLElement) {
+  // Fade out and remove the preloader immediately to prevent the UI from sticking
+  // while scripts load sequentially.
+  const preloader = document.getElementById("preloader");
+  if (preloader) {
+    preloader.style.transition = "opacity 0.4s ease";
+    preloader.style.opacity = "0";
+    setTimeout(() => {
+      preloader.remove();
+    }, 400);
+  }
+
   await loadScriptsOnce();
   // Re-execute inline <script> tags inside the fragment (innerHTML scripts don't run)
   const inline = container.querySelectorAll("script");
