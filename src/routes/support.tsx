@@ -4,10 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import { listThreads, createThread } from "@/lib/chat.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { Plus, MessageSquare } from "lucide-react";
+import { TemplateShell } from "@/components/template-page";
 
 export const Route = createFileRoute("/support")({
-  component: Support,
-  head: () => ({ meta: [{ title: "Support — Delvora" }, { name: "description", content: "Chat with the Delvora AI assistant for instant help." }] }),
+  component: () => <TemplateShell><Support /></TemplateShell>,
+  head: () => ({ meta: [{ title: "Support — Safefreight Way" }] }),
 });
 
 function Support() {
