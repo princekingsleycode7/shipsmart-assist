@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TrackingRouteImport } from './routes/tracking'
 import { Route as TrackRouteImport } from './routes/track'
 import { Route as SupportRouteImport } from './routes/support'
 import { Route as ServicesRouteImport } from './routes/services'
@@ -27,6 +28,11 @@ import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminChatsRouteImport } from './routes/admin.chats'
 
+const TrackingRoute = TrackingRouteImport.update({
+  id: '/tracking',
+  path: '/tracking',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TrackRoute = TrackRouteImport.update({
   id: '/track',
   path: '/track',
@@ -123,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/services': typeof ServicesRoute
   '/support': typeof SupportRouteWithChildren
   '/track': typeof TrackRouteWithChildren
+  '/tracking': typeof TrackingRoute
   '/admin/chats': typeof AdminChatsRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/chat': typeof ApiChatRoute
@@ -139,6 +146,7 @@ export interface FileRoutesByTo {
   '/live-chat': typeof LiveChatRoute
   '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
+  '/tracking': typeof TrackingRoute
   '/admin/chats': typeof AdminChatsRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/chat': typeof ApiChatRoute
@@ -159,6 +167,7 @@ export interface FileRoutesById {
   '/services': typeof ServicesRoute
   '/support': typeof SupportRouteWithChildren
   '/track': typeof TrackRouteWithChildren
+  '/tracking': typeof TrackingRoute
   '/admin/chats': typeof AdminChatsRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/chat': typeof ApiChatRoute
@@ -180,6 +189,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/support'
     | '/track'
+    | '/tracking'
     | '/admin/chats'
     | '/admin/users'
     | '/api/chat'
@@ -196,6 +206,7 @@ export interface FileRouteTypes {
     | '/live-chat'
     | '/login'
     | '/services'
+    | '/tracking'
     | '/admin/chats'
     | '/admin/users'
     | '/api/chat'
@@ -215,6 +226,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/support'
     | '/track'
+    | '/tracking'
     | '/admin/chats'
     | '/admin/users'
     | '/api/chat'
@@ -235,11 +247,19 @@ export interface RootRouteChildren {
   ServicesRoute: typeof ServicesRoute
   SupportRoute: typeof SupportRouteWithChildren
   TrackRoute: typeof TrackRouteWithChildren
+  TrackingRoute: typeof TrackingRoute
   ApiChatRoute: typeof ApiChatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tracking': {
+      id: '/tracking'
+      path: '/tracking'
+      fullPath: '/tracking'
+      preLoaderRoute: typeof TrackingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/track': {
       id: '/track'
       path: '/track'
@@ -411,6 +431,7 @@ const rootRouteChildren: RootRouteChildren = {
   ServicesRoute: ServicesRoute,
   SupportRoute: SupportRouteWithChildren,
   TrackRoute: TrackRouteWithChildren,
+  TrackingRoute: TrackingRoute,
   ApiChatRoute: ApiChatRoute,
 }
 export const routeTree = rootRouteImport
