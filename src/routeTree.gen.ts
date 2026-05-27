@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TrackRouteImport } from './routes/track'
 import { Route as SupportRouteImport } from './routes/support'
+import { Route as ServicesRouteImport } from './routes/services'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LiveChatRouteImport } from './routes/live-chat'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -34,6 +35,11 @@ const TrackRoute = TrackRouteImport.update({
 const SupportRoute = SupportRouteImport.update({
   id: '/support',
   path: '/support',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicesRoute = ServicesRouteImport.update({
+  id: '/services',
+  path: '/services',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -114,6 +120,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/live-chat': typeof LiveChatRoute
   '/login': typeof LoginRoute
+  '/services': typeof ServicesRoute
   '/support': typeof SupportRouteWithChildren
   '/track': typeof TrackRouteWithChildren
   '/admin/chats': typeof AdminChatsRoute
@@ -131,6 +138,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/live-chat': typeof LiveChatRoute
   '/login': typeof LoginRoute
+  '/services': typeof ServicesRoute
   '/admin/chats': typeof AdminChatsRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/chat': typeof ApiChatRoute
@@ -148,6 +156,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/live-chat': typeof LiveChatRoute
   '/login': typeof LoginRoute
+  '/services': typeof ServicesRoute
   '/support': typeof SupportRouteWithChildren
   '/track': typeof TrackRouteWithChildren
   '/admin/chats': typeof AdminChatsRoute
@@ -168,6 +177,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/live-chat'
     | '/login'
+    | '/services'
     | '/support'
     | '/track'
     | '/admin/chats'
@@ -185,6 +195,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/live-chat'
     | '/login'
+    | '/services'
     | '/admin/chats'
     | '/admin/users'
     | '/api/chat'
@@ -201,6 +212,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/live-chat'
     | '/login'
+    | '/services'
     | '/support'
     | '/track'
     | '/admin/chats'
@@ -220,6 +232,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   LiveChatRoute: typeof LiveChatRoute
   LoginRoute: typeof LoginRoute
+  ServicesRoute: typeof ServicesRoute
   SupportRoute: typeof SupportRouteWithChildren
   TrackRoute: typeof TrackRouteWithChildren
   ApiChatRoute: typeof ApiChatRoute
@@ -239,6 +252,13 @@ declare module '@tanstack/react-router' {
       path: '/support'
       fullPath: '/support'
       preLoaderRoute: typeof SupportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/services': {
+      id: '/services'
+      path: '/services'
+      fullPath: '/services'
+      preLoaderRoute: typeof ServicesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -388,6 +408,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   LiveChatRoute: LiveChatRoute,
   LoginRoute: LoginRoute,
+  ServicesRoute: ServicesRoute,
   SupportRoute: SupportRouteWithChildren,
   TrackRoute: TrackRouteWithChildren,
   ApiChatRoute: ApiChatRoute,
