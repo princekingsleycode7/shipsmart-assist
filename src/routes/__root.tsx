@@ -14,7 +14,8 @@ import { BottomNav, TopNav } from "@/components/nav";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { checkIsAdmin } from "@/lib/admin.functions";
-import { LiveSupportWidget } from "@/components/chat-widget";
+import { FloatingLiveChat } from "@/components/FloatingLiveChat";
+
 
 import appCss from "../styles.css?url";
 
@@ -83,7 +84,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
     <html lang="en">
       <head><HeadContent /></head>
       <body>{children}
-        <LiveSupportWidget />
+        <FloatingLiveChat />
         <Scripts /></body>
     </html>
   );

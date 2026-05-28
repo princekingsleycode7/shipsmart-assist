@@ -134,6 +134,7 @@ export function WhatsAppFloat() {
   );
 }
 
+
 export function TemplatePage({ page }: { page: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const [html, setHtml] = useState<string>("");
@@ -157,6 +158,7 @@ export function TemplatePage({ page }: { page: string }) {
     <>
       <div ref={ref} dangerouslySetInnerHTML={{ __html: html }} />
       <WhatsAppFloat />
+   
     </>
   );
 }
@@ -189,6 +191,7 @@ export function TemplateShell({ children }: { children: React.ReactNode }) {
       </main>
       <div dangerouslySetInnerHTML={{ __html: footer }} />
       <WhatsAppFloat />
+   
     </>
   );
 }

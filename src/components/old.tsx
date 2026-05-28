@@ -1,12 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
-import { MessageSquare, X, Send, Minus, RefreshCw } from "lucide-react";
+import { MessageSquare, Send, Minus } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 
-// Replace these placeholders with your actual hooks/state functions from your tested setup
 interface Message {
   id: string;
   sender: "user" | "agent";
@@ -16,16 +15,31 @@ interface Message {
 
 export function LiveSupportWidget() {
   const [isOpen, setIsOpen] = useState(false);
+  const [hasScrolled, setHasScrolled] = useState(false);
   const [inputMessage, setInputMessage] = useState("");
   
-  // Hook this array up to your existing, working message state
+  // Connect this array to your tested message state
   const [messages, setMessages] = useState<Message[]>([
     { id: "1", sender: "agent", text: "Hello! Thanks for reaching out to ShipSmart. How can I help you with your shipment today?", time: "10:00 AM" }
   ]);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll layout wrapper on fresh messages
+  // 1. Monitor page scrolling to shift button position near the scroll-up element
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 100) {
+        setHasScrolled(true);
+      } else {
+        setHasScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Auto-scroll chat feed on new messages
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollIntoView({ behavior: "smooth" });
@@ -36,7 +50,6 @@ export function LiveSupportWidget() {
     e.preventDefault();
     if (!inputMessage.trim()) return;
 
-    // Call your existing backend send logic here
     const newMsg: Message = {
       id: Date.now().toString(),
       sender: "user",
@@ -46,17 +59,29 @@ export function LiveSupportWidget() {
 
     setMessages((prev) => [...prev, newMsg]);
     setInputMessage("");
-
-    // Simulate standard response placeholder for visual testing if needed
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 rounded-2xl font-sans selection:bg-orange-500/30">
+    // Fixed container wrapping the entire setup
+    <div className="fixed bottom-6 z-50 font-sans transition-all duration-300 ease-in-out">
+      
       {/* FLOATING ACTION BUTTON */}
       {!isOpen && (
         <Button
           onClick={() => setIsOpen(true)}
-          className="h-14 w-14 rounded-full bg-[#0F172A] hover:bg-[#1E293B] text-white shadow-xl transition-all duration-300 hover:scale-105 border border-orange-500/20"
+          className={`h-14 w-14 text-white shadow-xl transition-all duration-300 hover:scale-105 border border-orange-500/20 bg-[#0F172A] hover:bg-[#1E293B]
+            /* Base position (Bottom right) */
+            fixed bottom-6
+            
+            /* Shift 50px left on scroll, otherwise default right-6 */
+            ${hasScrolled ? "right-[calc(1.5rem+50px)]" : "right-6"}
+            
+            /* Square corners by default, transforms to rounded-2xl when page scrolls */
+            ${hasScrolled ? "rounded-2xl" : "rounded-none"}
+            
+            /* Mobile Responsiveness: Adjust position slightly on small screens if necessary */
+            sm:bottom-6 max-sm:bottom-4
+          `}
         >
           <MessageSquare className="h-6 w-6 text-orange-500" />
         </Button>
@@ -64,28 +89,35 @@ export function LiveSupportWidget() {
 
       {/* CHAT WINDOW INTERFACE */}
       {isOpen && (
-        <Card className="w-[380px] h-[520px] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-slate-200 bg-[#F8FAFC] transition-all duration-300 animate-in slide-in-from-bottom-5">
+        <Card className={`
+          shadow-2xl flex flex-col overflow-hidden border border-slate-200 bg-[#F8FAFC] transition-all duration-300 animate-in slide-in-from-bottom-5
           
-          {/* HEADER PANEL (Matching Brand Dark Slate) */}
-          <div className="bg-[#0F172A] px-4 py-4 text-white flex items-center justify-between border-b border-orange-500/20">
+          /* Mobile Responsiveness Rules */
+          /* Desktop layout sizes */
+          md:w-[380px] md:h-[520px] md:fixed md:bottom-6 md:right-6 md:rounded-2xl
+          
+          /* Fullscreen viewport layout on mobile devices */
+          max-md:fixed max-md:inset-0 max-md:w-full max-md:h-full max-md:rounded-none
+        `}>
+          
+          {/* HEADER PANEL */}
+          <div className="bg-[#0F172A] px-4 py-4 text-white flex items-center justify-between border-b border-orange-500/20 max-md:pt-8">
             <div className="flex items-center gap-3">
               <div className="relative">
                 <Avatar className="h-10 w-10 border border-slate-700">
                   <AvatarImage src="/assets/images/support-agent.png" alt="Support Agent" />
                   <AvatarFallback className="bg-orange-500 text-white font-bold">SS</AvatarFallback>
                 </Avatar>
-                {/* Active Online Status Dot */}
                 <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-emerald-500 border-2 border-[#0F172A]" />
               </div>
               <div>
-                <h3 className="font-semibold text-sm tracking-wide text-white flex items-center gap-1.5">
+                <h3 className="font-semibold text-sm tracking-wide text-white">
                   ShipSmart Assist
                 </h3>
                 <p className="text-xs text-slate-400 font-medium">Typically replies within minutes</p>
               </div>
             </div>
             
-            {/* Window Minimizer Toggle */}
             <div className="flex items-center gap-1">
               <Button 
                 variant="ghost" 
@@ -106,7 +138,7 @@ export function LiveSupportWidget() {
                 return (
                   <div
                     key={msg.id}
-                    className={`flex flex-col max-w-[80%] ${
+                    className={`flex flex-col max-w-[85%] ${
                       isUser ? "self-end items-end" : "self-start items-start"
                     }`}
                   >
@@ -129,22 +161,22 @@ export function LiveSupportWidget() {
             </div>
           </ScrollArea>
 
-          {/* INPUT BAR FOOTER (Clean Minimalist Wrapper) */}
+          {/* INPUT BAR FOOTER */}
           <form
             onSubmit={handleSendMessage}
-            className="p-3 bg-white border-t border-slate-100 flex items-center gap-2"
+            className="p-3 bg-white border-t border-slate-100 flex items-center gap-2 max-md:pb-6"
           >
             <div className="relative flex-1 flex items-center">
               <Input
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 placeholder="Type your message here..."
-                className="w-full bg-slate-50 border-slate-200 rounded-xl pr-10 focus-visible:ring-orange-500 focus-visible:border-orange-500 text-sm h-10 text-slate-800 placeholder:text-slate-400"
+                className="w-full bg-slate-50 border-slate-200 rounded-xl pr-10 focus-visible:ring-orange-500 text-sm h-10 text-slate-800 placeholder:text-slate-400"
               />
               <Button
                 type="submit"
-                size="icon"
                 disabled={!inputMessage.trim()}
+                size="icon"
                 className={`absolute right-1.5 top-1/2 -translate-y-1/2 h-7 w-7 rounded-lg transition-all ${
                   inputMessage.trim() 
                     ? "bg-orange-500 hover:bg-orange-600 text-white" 
