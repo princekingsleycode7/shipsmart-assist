@@ -67,7 +67,7 @@ function groupMessages(messages: any[], userId: string): GroupedMessage[] {
 function SignInPrompt() {
   return (
     <div
-      className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center px-6"
+      className="fixed inset-0 flex min-h-[100dvh] flex-col items-center justify-center px-6"
       style={{ background: "linear-gradient(135deg, #0F172A 0%, #1a2744 100%)" }}
     >
       <div className="w-full max-w-sm text-center">
