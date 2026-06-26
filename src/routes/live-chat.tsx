@@ -185,7 +185,7 @@ function LiveChat() {
   if (loading) {
     return (
       <div
-        className="flex min-h-[calc(100vh-4rem)] items-center justify-center"
+        className="flex min-h-[100dvh] items-center justify-center"
         style={{ background: "#0F172A" }}
       >
         <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
@@ -200,7 +200,7 @@ function LiveChat() {
   /* ── main layout ── */
   return (
     <div
-      className="flex h-[calc(100vh-4rem)] flex-col overflow-hidden"
+      className="fixed inset-0 flex h-[100dvh] flex-col overflow-hidden"
       style={{ background: "#0F172A" }}
     >
 
