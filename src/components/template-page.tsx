@@ -136,9 +136,10 @@ export function WhatsAppFloat() {
 }
 
 
-export function TemplatePage({ page }: { page: string }) {
+export function TemplatePage({ page, slot }: { page: string; slot?: { mountId: string; node: ReactNode } }) {
   const ref = useRef<HTMLDivElement>(null);
   const [html, setHtml] = useState<string>("");
+  const [mountEl, setMountEl] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
     injectCss();
@@ -153,13 +154,17 @@ export function TemplatePage({ page }: { page: string }) {
     if (!html || !ref.current) return;
     reinitTemplate(ref.current);
     window.scrollTo(0, 0);
-  }, [html]);
+    if (slot) {
+      const el = ref.current.querySelector<HTMLElement>(`#${slot.mountId}`);
+      setMountEl(el ?? null);
+    }
+  }, [html, slot]);
 
   return (
     <>
       <div ref={ref} dangerouslySetInnerHTML={{ __html: html }} />
+      {slot && mountEl ? createPortal(slot.node, mountEl) : null}
       <WhatsAppFloat />
-   
     </>
   );
 }
