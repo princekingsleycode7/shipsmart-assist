@@ -22,7 +22,7 @@ function SupportIndex() {
         <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
           <Sparkles className="h-6 w-6" />
         </span>
-        <h2 className="mt-4 font-display text-3xl">Delvora Assistant</h2>
+        <h2 className="mt-4 font-display text-3xl">Delflow Assistant</h2>
         <p className="mt-1 max-w-sm text-sm text-muted-foreground">
           Pick a saved chat from the sidebar, or start a new one.
         </p>

@@ -3,5 +3,5 @@ import { TemplatePage } from "@/components/template-page";
 
 export const Route = createFileRoute("/about")({
   component: () => <TemplatePage page="about" />,
-  head: () => ({ meta: [{ title: "About — Safefreight Way" }] }),
+  head: () => ({ meta: [{ title: "About — Delflow Logistics" }] }),
 });

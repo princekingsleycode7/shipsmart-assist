@@ -131,7 +131,7 @@ create table public.app_settings (
 );
 
 insert into public.app_settings (id, whatsapp_number, support_email)
-values (1, '15551234567', 'support@delvora.app');
+values (1, '15551234567', 'support@delflow.app');
 
 -- Updated_at trigger helper
 create or replace function public.touch_updated_at()

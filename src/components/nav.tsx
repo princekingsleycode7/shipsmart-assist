@@ -51,7 +51,7 @@ export function TopNav({ isAdmin, isAuthed, onLogout }: { isAdmin: boolean; isAu
       <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
         <Link to="/" className="flex items-center gap-2">
           <BrandMark />
-          <span className="font-display text-2xl">Delvora</span>
+          <span className="font-display text-2xl">Delflow</span>
         </Link>
         <nav className="flex items-center gap-1">
           {items.map((it) => (

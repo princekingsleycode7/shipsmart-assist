@@ -231,7 +231,7 @@ function LiveChat() {
               className="truncate text-sm font-semibold text-white"
               style={{ fontFamily: "'DM Serif Display', Georgia, serif" }}
             >
-              Delvora Support
+              Delflow Support
             </p>
             <p className="flex items-center gap-1.5 text-[11px] text-emerald-400">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />

@@ -6,7 +6,7 @@ import { TemplateShell } from "@/components/template-page";
 
 export const Route = createFileRoute("/track/$id")({
   component: Detail,
-  head: ({ params }) => ({ meta: [{ title: `Tracking ${params.id} — Safefreight Way` }] }),
+  head: ({ params }) => ({ meta: [{ title: `Tracking ${params.id} — Delflow Logistics` }] }),
 });
 
 const STATUS_LABEL: Record<string, string> = {
