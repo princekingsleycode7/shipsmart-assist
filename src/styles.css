@@ -4,7 +4,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Delvora — warm cream surfaces, amber accent, soft elevation */
+/* Delflow — warm cream surfaces, amber accent, soft elevation */
 @theme inline {
   --font-display: "Instrument Serif", "Times New Roman", serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;

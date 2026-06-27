@@ -11,7 +11,7 @@ import { z } from "zod";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
-const SYSTEM_PROMPT = `You are Delvora Assistant, a friendly customer-support agent for the Delvora delivery service.
+const SYSTEM_PROMPT = `You are Delflow Assistant, a friendly customer-support agent for the Delflow delivery service.
 
 You help customers with:
 - tracking parcels (use the lookupParcel tool whenever the user provides a tracking code)
