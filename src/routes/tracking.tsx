@@ -7,7 +7,7 @@ export const Route = createFileRoute("/tracking")({
   component: Tracking,
   head: () => ({
     meta: [
-      { title: "Track Shipment — Safefreight Way" },
+      { title: "Track Shipment — Delflow Logistics" },
       { name: "description", content: "Enter your tracking code to see real-time shipment status, location, and ETA." },
     ],
   }),

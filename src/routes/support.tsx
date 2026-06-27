@@ -8,7 +8,7 @@ import { TemplateShell } from "@/components/template-page";
 
 export const Route = createFileRoute("/support")({
   component: () => <TemplateShell><Support /></TemplateShell>,
-  head: () => ({ meta: [{ title: "Support — Safefreight Way" }] }),
+  head: () => ({ meta: [{ title: "Support — Delflow Logistics" }] }),
 });
 
 function Support() {

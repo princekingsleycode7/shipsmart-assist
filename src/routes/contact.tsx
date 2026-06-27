@@ -3,5 +3,5 @@ import { TemplatePage } from "@/components/template-page";
 
 export const Route = createFileRoute("/contact")({
   component: () => <TemplatePage page="contact" />,
-  head: () => ({ meta: [{ title: "Contact — Safefreight Way" }] }),
+  head: () => ({ meta: [{ title: "Contact — Delflow Logistics" }] }),
 });
